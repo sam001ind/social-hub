@@ -32,26 +32,13 @@ export default function ChannelsPage() {
   const handleAuthorize = async () => {
     setIsConnecting(true);
     
-    // Map our display names to NextAuth provider IDs
-    const providerMap: Record<string, string> = {
-      'YouTube': 'google',
-      'X (Twitter)': 'twitter',
-      'LinkedIn': 'linkedin',
-    };
-    
-    const providerId = providerMap[authenticatingChannel.platform];
-    
-    if (providerId) {
-      // Initiate real OAuth flow
-      await signIn(providerId, { callbackUrl: '/channels' });
-    } else {
-      // Fallback for mock channels
-      setTimeout(() => {
-        connectChannel(authenticatingChannel);
-        setIsConnecting(false);
-        setAuthenticatingChannel(null);
-      }, 1500);
-    }
+    // Since we don't have real OAuth credentials in the .env file for the demo,
+    // we will use the mock connection flow for all platforms.
+    setTimeout(() => {
+      connectChannel(authenticatingChannel);
+      setIsConnecting(false);
+      setAuthenticatingChannel(null);
+    }, 1500);
   };
 
   return (
