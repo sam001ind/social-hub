@@ -8,7 +8,7 @@ import { useSocialHub } from "@/lib/SocialHubContext";
 
 export default function InboxPage() {
   const { messages, updateMessageStatus } = useSocialHub();
-  const [activeMsg, setActiveMsg] = useState<number | null>(messages[0]?.id || null);
+  const [activeMsg, setActiveMsg] = useState<string | null>(messages[0]?.id || null);
   const [replyText, setReplyText] = useState("");
   const [activeFilter, setActiveFilter] = useState<'all' | 'unread' | 'escalated'>('all');
 

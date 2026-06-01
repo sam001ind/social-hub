@@ -54,3 +54,68 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+model Department {
+  id        String   @id @default(cuid())
+  name      String
+  industry  String
+  members   Int      @default(0)
+  connected Int      @default(0)
+  logo      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Channel {
+  id        String   @id @default(cuid())
+  platform  String
+  name      String
+  handle    String
+  color     String
+  bg        String
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  content   String
+  platforms String   // Store as JSON string: '["Facebook", "LinkedIn"]'
+  time      String
+  date      DateTime
+  author    String
+  status    String   // "draft", "scheduled", "published", "failed"
+  color     String
+  likes     Int      @default(0)
+  comments  Int      @default(0)
+  error     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  user      String
+  handle    String
+  platform  String
+  color     String
+  time      String
+  text      String
+  status    String   // "unread", "read", "escalated"
+  replies   String   // Store as JSON string of array
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Stream {
+  id        String   @id @default(cuid())
+  title     String
+  keyword   String
+  platform  String
+  color     String
+  posts     String   // Store as JSON string of array of posts
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
