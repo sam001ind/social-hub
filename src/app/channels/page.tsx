@@ -7,8 +7,11 @@ import { signIn, useSession } from "next-auth/react";
 import { useSocialHub } from "@/lib/SocialHubContext";
 
 export default function ChannelsPage() {
-  const { connectedChannels, connectChannel } = useSocialHub();
+  const { connectedChannels, connectChannel, removeChannel, editChannel } = useSocialHub();
   const [authenticatingChannel, setAuthenticatingChannel] = useState<any>(null);
+  const [editingChannel, setEditingChannel] = useState<any>(null);
+  const [editName, setEditName] = useState("");
+  const [editHandle, setEditHandle] = useState("");
   const [isConnecting, setIsConnecting] = useState(false);
 
   const availableChannels = [
@@ -61,7 +64,7 @@ export default function ChannelsPage() {
             <div key={channel.id} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
               <div className="flex items-start justify-between mb-4">
                 <div className={`h-10 w-10 rounded-lg ${channel.bg} flex items-center justify-center`}>
-                  <channel.icon className={`h-5 w-5 ${channel.color}`} />
+                  {channel.icon && <channel.icon className={`h-5 w-5 ${channel.color}`} />}
                 </div>
                 {channel.status === 'connected' ? (
                   <div className="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-2 py-1 rounded text-xs font-medium">
@@ -77,8 +80,11 @@ export default function ChannelsPage() {
                 <h3 className="font-bold text-slate-900">{channel.name}</h3>
                 <p className="text-sm text-slate-500">{channel.handle}</p>
                 <div className="mt-4 pt-4 border-t border-slate-100 flex gap-2">
-                  <button className="flex-1 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-600 text-sm font-medium rounded-md transition-colors">
-                    Settings
+                  <button onClick={() => setEditingChannel(channel)} className="flex-1 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-600 text-sm font-medium rounded-md transition-colors">
+                    Edit
+                  </button>
+                  <button onClick={() => removeChannel(channel.id)} className="flex-1 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-medium rounded-md transition-colors">
+                    Disconnect
                   </button>
                 </div>
               </div>
@@ -164,6 +170,63 @@ export default function ChannelsPage() {
               <p className="text-xs text-center text-slate-400">
                 You can revoke this access at any time in your {authenticatingChannel.platform} settings.
               </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {editingChannel && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6 relative border-b border-slate-100">
+              <button 
+                onClick={() => setEditingChannel(null)}
+                className="absolute right-4 top-4 text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <h2 className="text-xl font-bold text-slate-900">Edit Channel</h2>
+            </div>
+            
+            <div className="p-6 bg-slate-50 space-y-4">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Channel Name</label>
+                  <input 
+                    type="text" 
+                    defaultValue={editingChannel.name}
+                    onChange={e => setEditName(e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-900 focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Handle</label>
+                  <input 
+                    type="text" 
+                    defaultValue={editingChannel.handle}
+                    onChange={e => setEditHandle(e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-900 focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4">
+                <button 
+                  onClick={() => setEditingChannel(null)}
+                  className="px-4 py-2 text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={() => {
+                    editChannel(editingChannel.id, editName || editingChannel.name, editHandle || editingChannel.handle);
+                    setEditingChannel(null);
+                  }}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+                >
+                  Save Changes
+                </button>
+              </div>
             </div>
           </div>
         </div>

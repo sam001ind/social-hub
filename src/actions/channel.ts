@@ -35,3 +35,13 @@ export async function disconnectChannel(id: string) {
   revalidatePath("/channels");
   revalidatePath("/");
 }
+
+export async function updateChannel(id: string, data: { name: string; handle: string; status?: string }) {
+  const channel = await prisma.channel.update({
+    where: { id },
+    data
+  });
+  revalidatePath("/channels");
+  revalidatePath("/");
+  return channel;
+}

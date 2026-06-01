@@ -6,7 +6,7 @@ import { addDays } from "date-fns";
 import { getDepartments } from "@/actions/department";
 import { getPosts, createPost, deletePost as deletePostAction } from "@/actions/post";
 import { getMessages, updateMessageStatus as updateMsgStatusAction, replyToMessage } from "@/actions/message";
-import { getChannels } from "@/actions/channel";
+import { getChannels, connectMockChannel, disconnectChannel, updateChannel } from "@/actions/channel";
 import { getStreams } from "@/actions/stream";
 
 export type Post = {
@@ -37,6 +37,8 @@ type SocialHubContextType = {
   addMessageReply: (msgId: string, reply: string) => void;
   connectedChannels: any[];
   connectChannel: (channel: any) => void;
+  removeChannel: (id: string) => void;
+  editChannel: (id: string, name: string, handle: string) => void;
   streams: any[];
   addStream: (stream: any) => void;
   isComposerOpen: boolean;
@@ -140,8 +142,31 @@ export function SocialHubProvider({ children }: { children: ReactNode }) {
     await replyToMessage(msgId, reply);
   };
 
-  const connectChannel = (channel: any) => {
-    setConnectedChannels([...connectedChannels, { ...channel, id: Date.now().toString(), status: 'connected', name: 'New Connection', handle: '@new_account', bg: 'bg-indigo-100' }]);
+  const connectChannel = async (channel: any) => {
+    const tempId = Date.now().toString();
+    const newChannel = { ...channel, id: tempId, status: 'connected', name: 'New Connection', handle: '@new_account', bg: 'bg-indigo-100' };
+    setConnectedChannels([...connectedChannels, newChannel]);
+    
+    // Server action
+    const saved = await connectMockChannel({
+      platform: channel.platform,
+      name: 'New Connection',
+      handle: '@new_account',
+      color: channel.color,
+      bg: 'bg-indigo-100'
+    });
+    
+    setConnectedChannels(prev => prev.map(c => c.id === tempId ? { ...saved, icon: channel.icon } : c));
+  };
+
+  const removeChannel = async (id: string) => {
+    setConnectedChannels(connectedChannels.filter(c => c.id !== id));
+    await disconnectChannel(id);
+  };
+
+  const editChannel = async (id: string, name: string, handle: string) => {
+    setConnectedChannels(connectedChannels.map(c => c.id === id ? { ...c, name, handle } : c));
+    await updateChannel(id, { name, handle });
   };
 
   const addStream = (stream: any) => {
@@ -158,7 +183,7 @@ export function SocialHubProvider({ children }: { children: ReactNode }) {
       brands, addBrand, 
       posts, addPost, deletePost,
       messages, markAllMessagesRead, updateMessageStatus, addMessageReply,
-      connectedChannels, connectChannel,
+      connectedChannels, connectChannel, removeChannel, editChannel,
       streams, addStream,
       isComposerOpen, setComposerOpen
     }}>
