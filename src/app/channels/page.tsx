@@ -1,11 +1,14 @@
 "use client";
 
-import { Plus, CheckCircle2, AlertCircle } from "lucide-react";
+import { Plus, CheckCircle2, AlertCircle, X, Loader2 } from "lucide-react";
 import { FaFacebook as Facebook, FaInstagram as Instagram, FaLinkedin as Linkedin, FaTwitter as Twitter, FaYoutube as Youtube } from "react-icons/fa";
+import { useState } from "react";
 import { useSocialHub } from "@/lib/SocialHubContext";
 
 export default function ChannelsPage() {
   const { connectedChannels, connectChannel } = useSocialHub();
+  const [authenticatingChannel, setAuthenticatingChannel] = useState<any>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
 
   const availableChannels = [
     { platform: 'YouTube', icon: Youtube, color: 'text-red-600', description: 'Publish videos and shorts directly to your channel.' },
@@ -13,6 +16,20 @@ export default function ChannelsPage() {
     { platform: 'Google Business', icon: () => <span className="font-bold text-lg text-blue-500">G</span>, color: 'text-blue-500', description: 'Post updates, offers, and events to Google.' },
     { platform: 'Pinterest', icon: () => <span className="font-bold text-lg text-red-500">P</span>, color: 'text-red-500', description: 'Schedule pins to your boards.' },
   ];
+
+  const handleConnectClick = (channel: any) => {
+    setAuthenticatingChannel(channel);
+  };
+
+  const handleAuthorize = () => {
+    setIsConnecting(true);
+    // Simulate network delay
+    setTimeout(() => {
+      connectChannel(authenticatingChannel);
+      setIsConnecting(false);
+      setAuthenticatingChannel(null);
+    }, 1500);
+  };
 
   return (
     <div className="max-w-7xl mx-auto space-y-8">
@@ -60,7 +77,7 @@ export default function ChannelsPage() {
           {availableChannels.map(channel => (
             <div 
               key={channel.platform} 
-              onClick={() => connectChannel(channel)}
+              onClick={() => handleConnectClick(channel)}
               className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4 hover:border-indigo-300 transition-colors cursor-pointer group"
             >
               <div className="h-12 w-12 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
@@ -77,6 +94,64 @@ export default function ChannelsPage() {
           ))}
         </div>
       </div>
+
+      {authenticatingChannel && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6 text-center relative border-b border-slate-100">
+              <button 
+                onClick={() => !isConnecting && setAuthenticatingChannel(null)}
+                className="absolute right-4 top-4 text-slate-400 hover:text-slate-600 transition-colors"
+                disabled={isConnecting}
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <div className="mx-auto h-16 w-16 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
+                <authenticatingChannel.icon className={`h-8 w-8 ${authenticatingChannel.color}`} />
+              </div>
+              <h2 className="text-xl font-bold text-slate-900">Connect {authenticatingChannel.platform}</h2>
+              <p className="text-sm text-slate-500 mt-2">
+                My Institution is requesting access to your {authenticatingChannel.platform} account to publish posts and read engagement metrics.
+              </p>
+            </div>
+            
+            <div className="p-6 bg-slate-50 space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 text-sm text-slate-600">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                  Publish content on your behalf
+                </div>
+                <div className="flex items-center gap-3 text-sm text-slate-600">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                  Read profile analytics and engagement
+                </div>
+                <div className="flex items-center gap-3 text-sm text-slate-600">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                  Manage inbound messages
+                </div>
+              </div>
+
+              <button 
+                onClick={handleAuthorize}
+                disabled={isConnecting}
+                className="w-full flex justify-center items-center gap-2 bg-[#1877F2] hover:bg-[#1864D9] text-white py-2.5 rounded-lg font-medium transition-colors disabled:opacity-70 mt-6"
+              >
+                {isConnecting ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Connecting...
+                  </>
+                ) : (
+                  <>Authorize App</>
+                )}
+              </button>
+              <p className="text-xs text-center text-slate-400">
+                You can revoke this access at any time in your {authenticatingChannel.platform} settings.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
