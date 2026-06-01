@@ -8,6 +8,7 @@ import { useSocialHub } from "@/lib/SocialHubContext";
 
 export function Topbar() {
   const { isComposerOpen, setComposerOpen, activeBrand } = useSocialHub();
+  const [showNotifications, setShowNotifications] = useState(false);
 
   return (
     <>
@@ -24,11 +25,42 @@ export function Topbar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <button className="relative text-slate-400 hover:text-slate-600">
-            <Bell className="h-5 w-5" />
-            <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-          </button>
-          
+          <div className="relative">
+            <button 
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative text-slate-400 hover:text-slate-600 focus:outline-none"
+            >
+              <Bell className="h-5 w-5" />
+              <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+            </button>
+            
+            {showNotifications && (
+              <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden z-50">
+                <div className="p-4 border-b border-slate-100 flex justify-between items-center">
+                  <h3 className="font-bold text-slate-900">Notifications</h3>
+                  <button className="text-xs text-indigo-600 font-medium hover:text-indigo-700">Mark all as read</button>
+                </div>
+                <div className="max-h-96 overflow-y-auto">
+                  {[
+                    { id: 1, title: 'Post published successfully', desc: 'Your post to Twitter has been published.', time: '5m ago', unread: true },
+                    { id: 2, title: 'New message from @sarah', desc: 'Hey, I have a question about admission...', time: '1h ago', unread: true },
+                    { id: 3, title: 'Weekly report ready', desc: 'Your social media performance report is ready.', time: '2h ago', unread: false },
+                  ].map(notif => (
+                    <div key={notif.id} className={`p-4 border-b border-slate-50 hover:bg-slate-50 cursor-pointer ${notif.unread ? 'bg-indigo-50/30' : ''}`}>
+                      <div className="flex justify-between items-start mb-1">
+                        <h4 className={`text-sm ${notif.unread ? 'font-bold text-slate-900' : 'font-medium text-slate-700'}`}>{notif.title}</h4>
+                        <span className="text-xs text-slate-400">{notif.time}</span>
+                      </div>
+                      <p className="text-xs text-slate-500 line-clamp-2">{notif.desc}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="p-3 text-center border-t border-slate-100">
+                  <button className="text-sm text-indigo-600 font-medium hover:text-indigo-700">View all notifications</button>
+                </div>
+              </div>
+            )}
+          </div>
           <div className="h-8 w-px bg-slate-200"></div>
           
           <button 

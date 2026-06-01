@@ -15,6 +15,10 @@ export default function ChannelsPage() {
   const [isConnecting, setIsConnecting] = useState(false);
 
   const availableChannels = [
+    { platform: 'Facebook', icon: Facebook, color: 'text-blue-600', description: 'Connect your Facebook Pages and Groups.' },
+    { platform: 'Instagram', icon: Instagram, color: 'text-pink-600', description: 'Publish photos and reels to Instagram.' },
+    { platform: 'X (Twitter)', icon: Twitter, color: 'text-sky-500', description: 'Schedule tweets and thread updates.' },
+    { platform: 'LinkedIn', icon: Linkedin, color: 'text-blue-700', description: 'Post to personal profiles and company pages.' },
     { platform: 'YouTube', icon: Youtube, color: 'text-red-600', description: 'Publish videos and shorts directly to your channel.' },
     { platform: 'TikTok', icon: () => <span className="font-bold text-lg">d</span>, color: 'text-black', description: 'Schedule and auto-publish TikTok videos.' },
     { platform: 'Google Business', icon: () => <span className="font-bold text-lg text-blue-500">G</span>, color: 'text-blue-500', description: 'Post updates, offers, and events to Google.' },
