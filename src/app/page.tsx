@@ -35,15 +35,15 @@ export default function Dashboard() {
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-          <p className="text-slate-500">Welcome back! Here&apos;s what&apos;s happening across your brands today.</p>
+          <h1 className="text-2xl font-bold text-slate-900">Institution Media Overview</h1>
+          <p className="text-slate-500">Welcome back! Here&apos;s what&apos;s happening across your school network today.</p>
         </div>
         <select 
           value={activeBrand} 
           onChange={(e) => setActiveBrand(e.target.value)}
           className="bg-white border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium text-slate-700 outline-none focus:border-indigo-500 shadow-sm cursor-pointer"
         >
-          <option value="All Brands">All Brands</option>
+          <option value="All Accounts">All Accounts</option>
           {brands.map(b => (
             <option key={b.id} value={b.name}>{b.name}</option>
           ))}

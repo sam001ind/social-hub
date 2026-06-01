@@ -38,7 +38,10 @@ export function Sidebar() {
   return (
     <div className="flex h-full w-64 flex-col bg-slate-900 text-slate-300">
       <div className="flex h-16 items-center px-6">
-        <h1 className="text-xl font-bold text-white tracking-tight">SocialHub<span className="text-indigo-500">.</span></h1>
+        <div className="flex flex-col">
+          <h1 className="text-xl font-bold text-white tracking-tight">Media Hub<span className="text-indigo-500">.</span></h1>
+          <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">School ERP Module</span>
+        </div>
       </div>
       
       <div className="px-4 py-4">

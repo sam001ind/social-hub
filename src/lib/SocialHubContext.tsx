@@ -41,59 +41,59 @@ type SocialHubContextType = {
 const SocialHubContext = createContext<SocialHubContextType | undefined>(undefined);
 
 export function SocialHubProvider({ children }: { children: ReactNode }) {
-  const [activeBrand, setActiveBrand] = useState("All Brands");
+  const [activeBrand, setActiveBrand] = useState("All Accounts");
   
   const [brands, setBrands] = useState([
-    { id: 1, name: "TechCorp Inc.", industry: "Software", members: 12, connected: 6, logo: "TC" },
-    { id: 2, name: "FitnessStudio", industry: "Health & Wellness", members: 4, connected: 4, logo: "FS" },
-    { id: 3, name: "Local Coffee Co.", industry: "Food & Beverage", members: 2, connected: 2, logo: "LC" },
+    { id: 1, name: "Lincoln High School", industry: "Main Campus", members: 12, connected: 6, logo: "LH" },
+    { id: 2, name: "LHS Athletics", industry: "Sports", members: 4, connected: 4, logo: "AT" },
+    { id: 3, name: "Admissions & Alumni", industry: "Outreach", members: 2, connected: 2, logo: "AA" },
   ]);
 
   const [posts, setPosts] = useState<Post[]>([
-    { id: 1, content: "🚀 We are thrilled to announce the launch of our new enterprise features! #TechLaunch #Enterprise", platforms: ["Facebook", "LinkedIn"], time: "10:00 AM", date: addDays(new Date(), 1), author: "Sarah J.", status: "scheduled", color: "bg-blue-100 text-blue-700 border-blue-200" },
-    { id: 2, content: "Behind the scenes at TechCorp headquarters. Our engineering team working hard on the next update 💻✨", platforms: ["Instagram"], time: "2:30 PM", date: addDays(new Date(), 3), author: "Mike T.", status: "scheduled", color: "bg-pink-100 text-pink-700 border-pink-200" },
-    { id: 3, content: "Here are 5 reasons why you should upgrade to the new system...", platforms: ["LinkedIn"], time: "No date set", date: new Date(), author: "Sarah J.", status: "draft", color: "bg-slate-100 text-slate-700 border-slate-200" },
-    { id: 4, content: "Happy Friday! What's everyone working on this weekend?", platforms: ["X", "Facebook"], time: "9:00 AM", date: addDays(new Date(), -1), author: "Admin", status: "published", likes: 124, comments: 45, color: "bg-indigo-100 text-indigo-700 border-indigo-200" },
-    { id: 5, content: "Quick update on our API incident earlier today...", platforms: ["X"], time: "8:00 AM", date: new Date(), author: "DevTeam", status: "failed", error: "Rate limit exceeded", color: "bg-red-100 text-red-700 border-red-200" }
+    { id: 1, content: "🚀 Reminder: Final exams for the Spring semester begin next Monday. Make sure to check your student portal for the exact schedule! #LincolnHigh #FinalsWeek", platforms: ["Facebook", "LinkedIn"], time: "10:00 AM", date: addDays(new Date(), 1), author: "Principal Smith", status: "scheduled", color: "bg-blue-100 text-blue-700 border-blue-200" },
+    { id: 2, content: "A massive congratulations to our Varsity Basketball team for winning the regional championship last night! Go Lions! 🦁🏆✨", platforms: ["Instagram"], time: "2:30 PM", date: addDays(new Date(), 3), author: "Coach T.", status: "scheduled", color: "bg-pink-100 text-pink-700 border-pink-200" },
+    { id: 3, content: "Here are 5 study tips for parents to help their children prepare for the upcoming standardized tests...", platforms: ["LinkedIn"], time: "No date set", date: new Date(), author: "Sarah J. (Counselor)", status: "draft", color: "bg-slate-100 text-slate-700 border-slate-200" },
+    { id: 4, content: "Happy Friday LHS! The campus library will be open extended hours this weekend for anyone needing a quiet study space.", platforms: ["X", "Facebook"], time: "9:00 AM", date: addDays(new Date(), -1), author: "Admin", status: "published", likes: 124, comments: 45, color: "bg-indigo-100 text-indigo-700 border-indigo-200" },
+    { id: 5, content: "Notice: The late bus service (Route 4B) is delayed by 15 minutes due to heavy traffic on Main St.", platforms: ["X"], time: "8:00 AM", date: new Date(), author: "Transport Dept", status: "failed", error: "Rate limit exceeded", color: "bg-red-100 text-red-700 border-red-200" }
   ]);
 
   const [messages, setMessages] = useState<any[]>([
-    { id: 1, user: 'Sarah Jenkins', handle: '@sarahj', platform: 'Twitter', icon: Twitter, color: 'text-sky-500', time: '10m ago', text: 'Do you offer enterprise pricing for the new tool? Looking to deploy this across 50 team members.', status: 'unread', replies: [] },
-    { id: 2, user: 'TechReview Blog', handle: 'techreview', platform: 'LinkedIn', icon: Linkedin, color: 'text-blue-700', time: '1h ago', text: 'Great launch today! Would love to schedule a quick interview with your founder.', status: 'read', replies: [] },
-    { id: 3, user: 'Mark D.', handle: 'markd123', platform: 'Facebook', icon: Facebook, color: 'text-blue-600', time: '3h ago', text: 'I am having trouble connecting my instagram account. It keeps giving me an OAuth error.', status: 'escalated', replies: [] },
-    { id: 4, user: 'DesignStudio', handle: '@design_hq', platform: 'Instagram', icon: Instagram, color: 'text-pink-600', time: 'Yesterday', text: 'Love the new UI! 🔥🔥🔥', status: 'read', replies: [] },
+    { id: 1, user: 'Sarah Jenkins', handle: '@sarahj', platform: 'Twitter', icon: Twitter, color: 'text-sky-500', time: '10m ago', text: 'Does anyone know what time the parent-teacher meetings start this Thursday? I seem to have lost the email.', status: 'unread', replies: [] },
+    { id: 2, user: 'EdTech Review', handle: 'edtechblog', platform: 'LinkedIn', icon: Linkedin, color: 'text-blue-700', time: '1h ago', text: 'Great initiative on the new STEM lab! Would love to feature Lincoln High in our next newsletter.', status: 'read', replies: [] },
+    { id: 3, user: 'Mark D.', handle: 'markd123', platform: 'Facebook', icon: Facebook, color: 'text-blue-600', time: '3h ago', text: 'I am having trouble logging into the parent portal to see my childs grades. It keeps giving me an error.', status: 'escalated', replies: [] },
+    { id: 4, user: 'LHS Drama Club', handle: '@lhsdrama', platform: 'Instagram', icon: Instagram, color: 'text-pink-600', time: 'Yesterday', text: 'Thanks to everyone who came to see the spring musical! 🔥🔥🔥', status: 'read', replies: [] },
   ]);
 
   const [connectedChannels, setConnectedChannels] = useState([
-    { id: 1, platform: 'Facebook Page', name: 'TechCorp Official', handle: '@techcorp', icon: Facebook, color: 'text-blue-600', bg: 'bg-blue-100', status: 'connected' },
-    { id: 2, platform: 'Instagram', name: 'TechCorp Life', handle: '@techcorp_life', icon: Instagram, color: 'text-pink-600', bg: 'bg-pink-100', status: 'connected' },
-    { id: 3, platform: 'LinkedIn Page', name: 'TechCorp Inc.', handle: 'techcorp-inc', icon: Linkedin, color: 'text-blue-700', bg: 'bg-blue-100', status: 'connected' },
-    { id: 4, platform: 'X (Twitter)', name: 'TechCorp Support', handle: '@techcorp_help', icon: Twitter, color: 'text-black', bg: 'bg-slate-200', status: 'error' },
+    { id: 1, platform: 'Facebook Page', name: 'Lincoln High Official', handle: '@lincolnhigh', icon: Facebook, color: 'text-blue-600', bg: 'bg-blue-100', status: 'connected' },
+    { id: 2, platform: 'Instagram', name: 'LHS Student Life', handle: '@lhs_life', icon: Instagram, color: 'text-pink-600', bg: 'bg-pink-100', status: 'connected' },
+    { id: 3, platform: 'LinkedIn Page', name: 'Lincoln Alumni Assoc.', handle: 'lincoln-alumni', icon: Linkedin, color: 'text-blue-700', bg: 'bg-blue-100', status: 'connected' },
+    { id: 4, platform: 'X (Twitter)', name: 'LHS Athletics', handle: '@lhs_sports', icon: Twitter, color: 'text-black', bg: 'bg-slate-200', status: 'error' },
   ]);
 
   const [streams, setStreams] = useState([
     {
       id: 1,
-      title: "Brand Mentions",
-      keyword: "@techcorp",
+      title: "School Mentions",
+      keyword: "@lincolnhigh",
       platform: "Twitter",
       icon: Twitter,
       color: "text-sky-500",
       posts: [
-        { id: 101, user: "DevInsider", handle: "@devinsider", time: "5m", text: "Just tried out @techcorp's new enterprise feature. Game changer for our dev team! 🚀" },
-        { id: 102, user: "Sarah J.", handle: "@sarahj", time: "1h", text: "Can anyone recommend a good SMMP? Looking at @techcorp right now." },
+        { id: 101, user: "ParentInsider", handle: "@ptamom", time: "5m", text: "Just toured @lincolnhigh for my incoming freshman. The new STEM facilities are amazing! 🚀" },
+        { id: 102, user: "Sarah J.", handle: "@sarahj", time: "1h", text: "Can anyone recommend a good tutor for AP Calc? My son goes to @lincolnhigh." },
       ]
     },
     {
       id: 2,
-      title: "Industry Keywords",
-      keyword: "#SocialMediaMarketing",
+      title: "District Keywords",
+      keyword: "#District42Edu",
       platform: "Twitter",
       icon: Twitter,
       color: "text-sky-500",
       posts: [
-        { id: 201, user: "MarketingPro", handle: "@mktgpro", time: "12m", text: "What's the best time to post on LinkedIn in 2026? #SocialMediaMarketing" },
-        { id: 202, user: "AgencyLife", handle: "@agencylife", time: "45m", text: "We just published our Q3 report on engagement trends. #SocialMediaMarketing #Digital" },
+        { id: 201, user: "LocalNews", handle: "@citygazette", time: "12m", text: "All schools in #District42Edu will have a snow day tomorrow due to the blizzard warning." },
+        { id: 202, user: "TeacherLife", handle: "@teach123", time: "45m", text: "So proud of my students for their projects at the district science fair today! #District42Edu" },
       ]
     }
   ]);
