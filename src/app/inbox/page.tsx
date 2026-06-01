@@ -1,18 +1,44 @@
 "use client";
 
-import { MessageSquare, Twitter, Facebook, Instagram, Linkedin, Search, Filter, MoreVertical, Reply, CheckCircle2, CornerDownRight } from "lucide-react";
+import { MessageSquare, Search, Filter, MoreVertical, Reply, CheckCircle2, CornerDownRight } from "lucide-react";
+import { FaFacebook as Facebook, FaInstagram as Instagram, FaLinkedin as Linkedin, FaTwitter as Twitter } from "react-icons/fa";
 import { useState } from "react";
 
-export default function InboxPage() {
-  const [activeMsg, setActiveMsg] = useState(1);
-  const [replyText, setReplyText] = useState("");
+import { useSocialHub } from "@/lib/SocialHubContext";
 
-  const messages = [
-    { id: 1, user: 'Sarah Jenkins', handle: '@sarahj', platform: 'Twitter', icon: Twitter, color: 'text-sky-500', time: '10m ago', text: 'Do you offer enterprise pricing for the new tool? Looking to deploy this across 50 team members.', status: 'unread' },
-    { id: 2, user: 'TechReview Blog', handle: 'techreview', platform: 'LinkedIn', icon: Linkedin, color: 'text-blue-700', time: '1h ago', text: 'Great launch today! Would love to schedule a quick interview with your founder.', status: 'read' },
-    { id: 3, user: 'Mark D.', handle: 'markd123', platform: 'Facebook', icon: Facebook, color: 'text-blue-600', time: '3h ago', text: 'I am having trouble connecting my instagram account. It keeps giving me an OAuth error.', status: 'escalated' },
-    { id: 4, user: 'DesignStudio', handle: '@design_hq', platform: 'Instagram', icon: Instagram, color: 'text-pink-600', time: 'Yesterday', text: 'Love the new UI! 🔥🔥🔥', status: 'read' },
-  ];
+export default function InboxPage() {
+  const { messages, updateMessageStatus } = useSocialHub();
+  const [activeMsg, setActiveMsg] = useState<number | null>(messages[0]?.id || null);
+  const [replyText, setReplyText] = useState("");
+  const [activeFilter, setActiveFilter] = useState<'all' | 'unread' | 'escalated'>('all');
+
+  const getPlatformIcon = (platform: string) => {
+    switch(platform) {
+      case 'Twitter': return Twitter;
+      case 'LinkedIn': return Linkedin;
+      case 'Facebook': return Facebook;
+      case 'Instagram': return Instagram;
+      default: return MessageSquare;
+    }
+  };
+
+  const filteredMessages = messages.filter(m => {
+    if (activeFilter === 'unread') return m.status === 'unread';
+    if (activeFilter === 'escalated') return m.status === 'escalated';
+    return true;
+  });
+
+  const handleReply = () => {
+    if (!replyText || !activeMsg) return;
+    updateMessageStatus(activeMsg, 'read');
+    setReplyText("");
+  };
+
+  const handleResolve = () => {
+    if (!activeMsg) return;
+    updateMessageStatus(activeMsg, 'read');
+    setActiveMsg(null);
+  };
 
   return (
     <div className="h-full flex flex-col -m-6"> {/* Negative margin to fill main area entirely */}
@@ -22,7 +48,10 @@ export default function InboxPage() {
           <p className="text-sm text-slate-500">Manage all your messages, comments, and mentions.</p>
         </div>
         <div className="flex gap-2">
-          <button className="px-3 py-1.5 text-sm font-medium bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200">
+          <button 
+            onClick={() => messages.forEach(m => updateMessageStatus(m.id, 'read'))}
+            className="px-3 py-1.5 text-sm font-medium bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200"
+          >
             Mark all read
           </button>
         </div>
@@ -34,16 +63,26 @@ export default function InboxPage() {
           <div className="p-4 border-b border-slate-200">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Smart Views</h3>
             <div className="space-y-1">
-              <button className="w-full flex justify-between items-center px-3 py-2 bg-indigo-100 text-indigo-700 rounded-md font-medium text-sm">
+              <button 
+                onClick={() => setActiveFilter('all')}
+                className={`w-full flex justify-between items-center px-3 py-2 rounded-md font-medium text-sm ${activeFilter === 'all' ? 'bg-indigo-100 text-indigo-700' : 'text-slate-600 hover:bg-slate-100'}`}
+              >
                 <span>All Messages</span>
-                <span className="bg-indigo-200 text-indigo-800 text-xs px-2 py-0.5 rounded-full">12</span>
+                <span className="bg-indigo-200 text-indigo-800 text-xs px-2 py-0.5 rounded-full">{messages.length}</span>
               </button>
-              <button className="w-full flex justify-between items-center px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-md font-medium text-sm">
+              <button 
+                onClick={() => setActiveFilter('unread')}
+                className={`w-full flex justify-between items-center px-3 py-2 rounded-md font-medium text-sm ${activeFilter === 'unread' ? 'bg-blue-100 text-blue-700' : 'text-slate-600 hover:bg-slate-100'}`}
+              >
                 <span>Unread</span>
-                <span className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">4</span>
+                <span className="bg-blue-200 text-blue-800 text-xs px-2 py-0.5 rounded-full">{messages.filter(m=>m.status==='unread').length}</span>
               </button>
-              <button className="w-full flex justify-between items-center px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-md font-medium text-sm">
-                <span>Assigned to me</span>
+              <button 
+                onClick={() => setActiveFilter('escalated')}
+                className={`w-full flex justify-between items-center px-3 py-2 rounded-md font-medium text-sm ${activeFilter === 'escalated' ? 'bg-red-100 text-red-700' : 'text-slate-600 hover:bg-slate-100'}`}
+              >
+                <span>Escalated</span>
+                <span className="bg-red-200 text-red-800 text-xs px-2 py-0.5 rounded-full">{messages.filter(m=>m.status==='escalated').length}</span>
               </button>
             </div>
           </div>
@@ -87,18 +126,21 @@ export default function InboxPage() {
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
-            {messages.map(msg => (
+            {filteredMessages.map(msg => {
+              const Icon = getPlatformIcon(msg.platform);
+              return (
               <div 
                 key={msg.id} 
                 onClick={() => setActiveMsg(msg.id)}
                 className={`p-4 border-b border-slate-100 cursor-pointer transition-colors relative ${activeMsg === msg.id ? 'bg-indigo-50 border-l-2 border-l-indigo-600' : 'hover:bg-slate-50 border-l-2 border-l-transparent'}`}
               >
                 {msg.status === 'unread' && <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-blue-500"></div>}
+                {msg.status === 'escalated' && <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-red-500"></div>}
                 
                 <div className="flex justify-between items-start mb-1">
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-sm text-slate-900">{msg.user}</span>
-                    <msg.icon className={`h-3 w-3 ${msg.color}`} />
+                    <Icon className="h-3 w-3 text-slate-500" />
                   </div>
                   <span className="text-xs text-slate-400 whitespace-nowrap ml-2">{msg.time}</span>
                 </div>
@@ -106,7 +148,12 @@ export default function InboxPage() {
                   {msg.text}
                 </p>
               </div>
-            ))}
+            )})}
+            {filteredMessages.length === 0 && (
+              <div className="p-8 text-center text-slate-500 text-sm">
+                No messages found.
+              </div>
+            )}
           </div>
         </div>
 
@@ -114,24 +161,25 @@ export default function InboxPage() {
         <div className="flex-1 bg-white flex flex-col hidden lg:flex">
           {activeMsg ? (() => {
             const msg = messages.find(m => m.id === activeMsg)!;
+            const Icon = getPlatformIcon(msg.platform);
             return (
               <>
                 {/* Thread Header */}
                 <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0">
                   <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 rounded-full bg-slate-200 overflow-hidden shrink-0">
-                      <img src={`https://ui-avatars.com/api/?name=${msg.user}&background=random`} alt={msg.user} />
+                    <div className="h-10 w-10 rounded-full bg-slate-200 overflow-hidden shrink-0 flex items-center justify-center text-slate-500 font-bold">
+                      {msg.user[0]}
                     </div>
                     <div>
                       <h3 className="font-bold text-slate-900 flex items-center gap-2">
                         {msg.user}
-                        <msg.icon className={`h-4 w-4 ${msg.color}`} />
+                        <Icon className="h-4 w-4 text-slate-500" />
                       </h3>
                       <p className="text-xs text-slate-500">{msg.handle} • {msg.platform}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button className="px-3 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-100 hover:bg-emerald-200 rounded flex items-center gap-1 transition-colors">
+                    <button onClick={handleResolve} className="px-3 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-100 hover:bg-emerald-200 rounded flex items-center gap-1 transition-colors">
                       <CheckCircle2 className="h-3 w-3" /> Resolve
                     </button>
                     <button className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded transition-colors">
@@ -143,8 +191,8 @@ export default function InboxPage() {
                 {/* Thread Body */}
                 <div className="flex-1 overflow-y-auto p-6 bg-white space-y-6">
                   <div className="flex gap-4">
-                    <div className="h-8 w-8 rounded-full bg-slate-200 overflow-hidden shrink-0 mt-1">
-                      <img src={`https://ui-avatars.com/api/?name=${msg.user}&background=random`} alt={msg.user} />
+                    <div className="h-8 w-8 rounded-full bg-slate-200 overflow-hidden shrink-0 mt-1 flex items-center justify-center text-slate-500 font-bold">
+                      {msg.user[0]}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-baseline gap-2 mb-1">
@@ -175,7 +223,7 @@ export default function InboxPage() {
                         <button className="text-xs font-medium text-slate-500 hover:text-slate-700 px-2">
                           Add Internal Note
                         </button>
-                        <button className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                        <button onClick={handleReply} className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
                           <Reply className="h-3 w-3" />
                           Send Reply
                         </button>

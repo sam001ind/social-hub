@@ -22,7 +22,15 @@ const growthData = [
   { name: 'Sun', followers: 5400, reach: 4800 },
 ];
 
+import { useSocialHub } from "@/lib/SocialHubContext";
+
 export default function Dashboard() {
+  const { activeBrand, setActiveBrand, brands, connectedChannels, posts, messages } = useSocialHub();
+
+  const publishedToday = posts.filter(p => p.status === 'published').length;
+  const scheduledPosts = posts.filter(p => p.status === 'scheduled').length;
+  const failedPosts = posts.filter(p => p.status === 'failed').length;
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       <div className="flex items-center justify-between">
@@ -30,10 +38,15 @@ export default function Dashboard() {
           <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
           <p className="text-slate-500">Welcome back! Here&apos;s what&apos;s happening across your brands today.</p>
         </div>
-        <select className="bg-white border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium text-slate-700 outline-none focus:border-indigo-500 shadow-sm cursor-pointer">
-          <option>All Brands</option>
-          <option>TechCorp Inc.</option>
-          <option>FitnessStudio</option>
+        <select 
+          value={activeBrand} 
+          onChange={(e) => setActiveBrand(e.target.value)}
+          className="bg-white border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium text-slate-700 outline-none focus:border-indigo-500 shadow-sm cursor-pointer"
+        >
+          <option value="All Brands">All Brands</option>
+          {brands.map(b => (
+            <option key={b.id} value={b.name}>{b.name}</option>
+          ))}
         </select>
       </div>
 
@@ -45,7 +58,7 @@ export default function Dashboard() {
             <Users className="h-5 w-5 text-indigo-500" />
           </div>
           <div>
-            <p className="text-3xl font-bold text-slate-900">12</p>
+            <p className="text-3xl font-bold text-slate-900">{connectedChannels.length}</p>
             <p className="text-xs text-emerald-500 font-medium mt-1">+2 this month</p>
           </div>
         </div>
@@ -55,7 +68,7 @@ export default function Dashboard() {
             <CheckCircle2 className="h-5 w-5 text-emerald-500" />
           </div>
           <div>
-            <p className="text-3xl font-bold text-slate-900">8</p>
+            <p className="text-3xl font-bold text-slate-900">{publishedToday}</p>
             <p className="text-xs text-emerald-500 font-medium mt-1">On schedule</p>
           </div>
         </div>
@@ -65,7 +78,7 @@ export default function Dashboard() {
             <Clock className="h-5 w-5 text-amber-500" />
           </div>
           <div>
-            <p className="text-3xl font-bold text-slate-900">24</p>
+            <p className="text-3xl font-bold text-slate-900">{scheduledPosts}</p>
             <p className="text-xs text-slate-400 font-medium mt-1">Next 7 days</p>
           </div>
         </div>
@@ -75,7 +88,7 @@ export default function Dashboard() {
             <AlertCircle className="h-5 w-5 text-red-500" />
           </div>
           <div>
-            <p className="text-3xl font-bold text-slate-900">1</p>
+            <p className="text-3xl font-bold text-slate-900">{failedPosts}</p>
             <p className="text-xs text-red-500 font-medium mt-1">API Error on Instagram</p>
           </div>
         </div>
@@ -183,21 +196,17 @@ export default function Dashboard() {
           <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700">View All →</button>
         </div>
         <div className="divide-y divide-slate-100">
-          {[
-            { id: 1, user: "Sarah Jenkins", platform: "Facebook", time: "10 mins ago", msg: "Do you offer enterprise pricing for the new tool?", status: "unread" },
-            { id: 2, user: "Mark D.", platform: "X", time: "1 hour ago", msg: "I'm having trouble connecting my account. Please help!", status: "escalated" },
-            { id: 3, user: "TechReview", platform: "LinkedIn", time: "3 hours ago", msg: "Great launch today! Can we schedule an interview?", status: "unread" }
-          ].map(msg => (
+          {messages.slice(0, 3).map(msg => (
             <div key={msg.id} className="p-4 hover:bg-slate-50 transition-colors flex items-center gap-4 cursor-pointer">
-              <div className="h-10 w-10 rounded-full bg-slate-200 overflow-hidden shrink-0">
-                <img src={`https://ui-avatars.com/api/?name=${msg.user}&background=random`} alt={msg.user} />
+              <div className="h-10 w-10 rounded-full bg-slate-200 overflow-hidden shrink-0 flex items-center justify-center text-slate-500 font-bold">
+                {msg.user[0]}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
                   <h4 className="text-sm font-bold text-slate-900">{msg.user} <span className="text-xs font-normal text-slate-500 ml-2">via {msg.platform}</span></h4>
                   <span className="text-xs text-slate-400">{msg.time}</span>
                 </div>
-                <p className="text-sm text-slate-600 truncate">{msg.msg}</p>
+                <p className="text-sm text-slate-600 truncate">{msg.text}</p>
               </div>
               <div className="shrink-0">
                 {msg.status === 'unread' && <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">New</span>}

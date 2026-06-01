@@ -3,34 +3,14 @@
 import { Plus, Search, Filter, Calendar, Clock, CheckCircle2, AlertCircle, Edit2, Trash2, MoreVertical } from "lucide-react";
 import { useState } from "react";
 import UniversalComposer from "@/components/publishing/UniversalComposer";
+import { useSocialHub } from "@/lib/SocialHubContext";
 
 export default function PublishingPage() {
-  const [isComposerOpen, setIsComposerOpen] = useState(false);
+  const { posts, deletePost, setComposerOpen } = useSocialHub();
   const [activeTab, setActiveTab] = useState('scheduled');
 
-  const posts = {
-    scheduled: [
-      { id: 1, content: "🚀 We are thrilled to announce the launch of our new enterprise features! #TechLaunch #Enterprise", platforms: ["Facebook", "LinkedIn"], time: "Tomorrow, 10:00 AM", author: "Sarah J.", status: "scheduled" },
-      { id: 2, content: "Behind the scenes at TechCorp headquarters. Our engineering team working hard on the next update 💻✨", platforms: ["Instagram"], time: "Jun 15, 2:30 PM", author: "Mike T.", status: "scheduled" },
-    ],
-    drafts: [
-      { id: 3, content: "Here are 5 reasons why you should upgrade to the new system...", platforms: ["LinkedIn"], time: "No date set", author: "Sarah J.", status: "draft" },
-    ],
-    published: [
-      { id: 4, content: "Happy Friday! What's everyone working on this weekend?", platforms: ["X", "Facebook"], time: "Yesterday, 9:00 AM", author: "Admin", status: "published", likes: 124, comments: 45 },
-    ],
-    failed: [
-      { id: 5, content: "Quick update on our API incident earlier today...", platforms: ["X"], time: "Today, 8:00 AM", author: "DevTeam", status: "failed", error: "Rate limit exceeded" },
-    ]
-  };
-
   const getActivePosts = () => {
-    switch (activeTab) {
-      case 'drafts': return posts.drafts;
-      case 'published': return posts.published;
-      case 'failed': return posts.failed;
-      default: return posts.scheduled;
-    }
+    return posts.filter(p => p.status === activeTab);
   };
 
   return (
@@ -41,7 +21,7 @@ export default function PublishingPage() {
           <p className="text-slate-500">Manage your drafts, scheduled posts, and publishing history.</p>
         </div>
         <button 
-          onClick={() => setIsComposerOpen(true)}
+          onClick={() => setComposerOpen(true)}
           className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium"
         >
           <Plus className="h-4 w-4" />
@@ -57,13 +37,13 @@ export default function PublishingPage() {
               onClick={() => setActiveTab('drafts')}
               className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${activeTab === 'drafts' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
             >
-              Drafts <span className="ml-1 text-xs text-slate-400">({posts.drafts.length})</span>
+              Drafts <span className="ml-1 text-xs text-slate-400">({posts.filter(p=>p.status==='draft').length})</span>
             </button>
             <button 
               onClick={() => setActiveTab('scheduled')}
               className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${activeTab === 'scheduled' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
             >
-              Scheduled <span className="ml-1 text-xs text-slate-400">({posts.scheduled.length})</span>
+              Scheduled <span className="ml-1 text-xs text-slate-400">({posts.filter(p=>p.status==='scheduled').length})</span>
             </button>
             <button 
               onClick={() => setActiveTab('published')}
@@ -75,7 +55,7 @@ export default function PublishingPage() {
               onClick={() => setActiveTab('failed')}
               className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${activeTab === 'failed' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-600 hover:text-red-600'}`}
             >
-              Failed <span className="ml-1 text-xs text-slate-400">({posts.failed.length})</span>
+              Failed <span className="ml-1 text-xs text-slate-400">({posts.filter(p=>p.status==='failed').length})</span>
             </button>
           </div>
 
@@ -134,7 +114,7 @@ export default function PublishingPage() {
                     <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors">
                       <Edit2 className="h-4 w-4" />
                     </button>
-                    <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors">
+                    <button onClick={() => deletePost(post.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors">
                       <Trash2 className="h-4 w-4" />
                     </button>
                     <button className="p-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded transition-colors">
@@ -171,7 +151,6 @@ export default function PublishingPage() {
         </div>
       </div>
       
-      {isComposerOpen && <UniversalComposer onClose={() => setIsComposerOpen(false)} />}
     </div>
   );
 }

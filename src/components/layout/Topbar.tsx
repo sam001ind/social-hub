@@ -4,8 +4,10 @@ import { Bell, Search, Plus } from "lucide-react";
 import { useState } from "react";
 import UniversalComposer from "../publishing/UniversalComposer";
 
+import { useSocialHub } from "@/lib/SocialHubContext";
+
 export function Topbar() {
-  const [isComposerOpen, setIsComposerOpen] = useState(false);
+  const { isComposerOpen, setComposerOpen, activeBrand } = useSocialHub();
 
   return (
     <>
@@ -30,12 +32,12 @@ export function Topbar() {
           <div className="h-8 w-px bg-slate-200"></div>
           
           <button 
-            onClick={() => setIsComposerOpen(true)}
-            className="flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors shadow-sm"
-          >
-            <Plus className="h-4 w-4" />
-            New Post
-          </button>
+          onClick={() => setComposerOpen(true)}
+          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm"
+        >
+          <Plus className="h-4 w-4" />
+          <span>New Post</span>
+        </button>
           
           <div className="h-8 w-8 rounded-full bg-slate-200 ml-2 overflow-hidden border border-slate-300 cursor-pointer">
             <img src="https://ui-avatars.com/api/?name=Admin+User&background=6366f1&color=fff" alt="User avatar" />
@@ -44,7 +46,7 @@ export function Topbar() {
       </header>
 
       {isComposerOpen && (
-        <UniversalComposer onClose={() => setIsComposerOpen(false)} />
+        <UniversalComposer onClose={() => setComposerOpen(false)} />
       )}
     </>
   );

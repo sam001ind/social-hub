@@ -1,14 +1,11 @@
 "use client";
 
-import { Plus, Facebook, Instagram, Twitter, Linkedin, Youtube, CheckCircle2, AlertCircle } from "lucide-react";
+import { Plus, CheckCircle2, AlertCircle } from "lucide-react";
+import { FaFacebook as Facebook, FaInstagram as Instagram, FaLinkedin as Linkedin, FaTwitter as Twitter, FaYoutube as Youtube } from "react-icons/fa";
+import { useSocialHub } from "@/lib/SocialHubContext";
 
 export default function ChannelsPage() {
-  const connectedChannels = [
-    { id: 1, platform: 'Facebook Page', name: 'TechCorp Official', handle: '@techcorp', icon: Facebook, color: 'text-blue-600', bg: 'bg-blue-100', status: 'connected' },
-    { id: 2, platform: 'Instagram', name: 'TechCorp Life', handle: '@techcorp_life', icon: Instagram, color: 'text-pink-600', bg: 'bg-pink-100', status: 'connected' },
-    { id: 3, platform: 'LinkedIn Page', name: 'TechCorp Inc.', handle: 'techcorp-inc', icon: Linkedin, color: 'text-blue-700', bg: 'bg-blue-100', status: 'connected' },
-    { id: 4, platform: 'X (Twitter)', name: 'TechCorp Support', handle: '@techcorp_help', icon: Twitter, color: 'text-black', bg: 'bg-slate-200', status: 'error' },
-  ];
+  const { connectedChannels, connectChannel } = useSocialHub();
 
   const availableChannels = [
     { platform: 'YouTube', icon: Youtube, color: 'text-red-600', description: 'Publish videos and shorts directly to your channel.' },
@@ -61,7 +58,11 @@ export default function ChannelsPage() {
         <h2 className="text-lg font-bold text-slate-900 mb-4">Connect New Channel</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {availableChannels.map(channel => (
-            <div key={channel.platform} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4 hover:border-indigo-300 transition-colors cursor-pointer group">
+            <div 
+              key={channel.platform} 
+              onClick={() => connectChannel(channel)}
+              className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4 hover:border-indigo-300 transition-colors cursor-pointer group"
+            >
               <div className="h-12 w-12 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
                 <channel.icon className={`h-6 w-6 ${channel.color}`} />
               </div>

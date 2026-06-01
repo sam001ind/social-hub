@@ -14,7 +14,8 @@ import {
   Activity, 
   BarChart3, 
   FileText, 
-  Settings 
+  Settings,
+  ArrowLeft
 } from "lucide-react";
 
 const navigation = [
@@ -68,6 +69,16 @@ export function Sidebar() {
             );
           })}
         </nav>
+      </div>
+      
+      <div className="mt-auto p-4 border-t border-slate-800">
+        <a 
+          href="http://localhost:3000"
+          className="group flex items-center gap-3 rounded-md px-2 py-2 text-sm font-medium transition-colors hover:bg-slate-800 hover:text-white"
+        >
+          <ArrowLeft className="h-5 w-5 shrink-0 text-slate-400 group-hover:text-white transition-colors" />
+          Back to ERP
+        </a>
       </div>
     </div>
   );

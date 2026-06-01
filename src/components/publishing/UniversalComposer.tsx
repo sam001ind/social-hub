@@ -2,8 +2,10 @@
 
 import { X, Send, Calendar, Bot, Image as ImageIcon, Sparkles, Hash, MapPin, Smile } from "lucide-react";
 import { useState } from "react";
+import { useSocialHub } from "@/lib/SocialHubContext";
 
 export default function UniversalComposer({ onClose }: { onClose: () => void }) {
+  const { addPost } = useSocialHub();
   const [content, setContent] = useState("");
   
   const platforms = [
@@ -21,6 +23,20 @@ export default function UniversalComposer({ onClose }: { onClose: () => void }) 
     } else {
       setSelectedPlatforms([...selectedPlatforms, id]);
     }
+  };
+
+  const handlePublish = (status: 'published' | 'scheduled') => {
+    if (!content) return;
+    addPost({
+      content,
+      platforms: selectedPlatforms.map(id => platforms.find(p => p.id === id)?.name || id),
+      time: status === 'published' ? 'Just now' : 'Tomorrow, 10:00 AM',
+      date: new Date(),
+      author: 'Current User',
+      status,
+      color: status === 'published' ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 'bg-blue-100 text-blue-700 border-blue-200'
+    });
+    onClose();
   };
 
   return (
@@ -105,11 +121,17 @@ export default function UniversalComposer({ onClose }: { onClose: () => void }) 
               Save Draft
             </button>
             <div className="flex items-center gap-3">
-              <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
+              <button 
+                onClick={() => handlePublish('scheduled')}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
+              >
                 <Calendar className="h-4 w-4" />
                 Schedule
               </button>
-              <button className="flex items-center gap-2 px-6 py-2 bg-indigo-600 rounded-lg text-sm font-semibold text-white hover:bg-indigo-700 transition-colors shadow-sm">
+              <button 
+                onClick={() => handlePublish('published')}
+                className="flex items-center gap-2 px-6 py-2 bg-indigo-600 rounded-lg text-sm font-semibold text-white hover:bg-indigo-700 transition-colors shadow-sm"
+              >
                 <Send className="h-4 w-4" />
                 Publish Now
               </button>

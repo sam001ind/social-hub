@@ -1,6 +1,7 @@
 "use client";
 
-import { Search, Plus, Filter, MoreVertical, Twitter, RefreshCw, MessageSquare } from "lucide-react";
+import { Search, Plus, Filter, MoreVertical, RefreshCw, MessageSquare } from "lucide-react";
+import { FaTwitter as Twitter } from "react-icons/fa";
 
 export default function MonitoringPage() {
   const streams = [

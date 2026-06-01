@@ -1,13 +1,28 @@
 "use client";
 
-import { Plus, Settings, MoreVertical, Briefcase, ExternalLink, Users, BarChart } from "lucide-react";
+import { useState } from "react";
+import { Plus, Settings, MoreVertical, Briefcase, ExternalLink, Users, BarChart, X } from "lucide-react";
+import { useSocialHub } from "@/lib/SocialHubContext";
 
 export default function BrandsPage() {
-  const brands = [
-    { id: 1, name: "TechCorp Inc.", industry: "Software", members: 12, connected: 6, logo: "TC" },
-    { id: 2, name: "FitnessStudio", industry: "Health & Wellness", members: 4, connected: 4, logo: "FS" },
-    { id: 3, name: "Local Coffee Co.", industry: "Food & Beverage", members: 2, connected: 2, logo: "LC" },
-  ];
+  const { brands, addBrand } = useSocialHub();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newBrandName, setNewBrandName] = useState("");
+  const [newBrandIndustry, setNewBrandIndustry] = useState("");
+
+  const handleCreate = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newBrandName) {
+      addBrand({
+        name: newBrandName,
+        industry: newBrandIndustry || "General",
+        logo: newBrandName.substring(0, 2).toUpperCase()
+      });
+      setIsModalOpen(false);
+      setNewBrandName("");
+      setNewBrandIndustry("");
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -16,7 +31,10 @@ export default function BrandsPage() {
           <h1 className="text-2xl font-bold text-slate-900">Brand Management</h1>
           <p className="text-slate-500">Manage all your client workspaces and internal brands from one place.</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+        >
           <Plus className="h-4 w-4" />
           Create Brand
         </button>
@@ -71,7 +89,10 @@ export default function BrandsPage() {
         ))}
 
         {/* Create New Card */}
-        <div className="bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center p-6 text-center cursor-pointer hover:bg-slate-100 hover:border-indigo-400 transition-colors group h-full min-h-[260px]">
+        <div 
+          onClick={() => setIsModalOpen(true)}
+          className="bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center p-6 text-center cursor-pointer hover:bg-slate-100 hover:border-indigo-400 transition-colors group h-full min-h-[260px]"
+        >
           <div className="h-12 w-12 rounded-full bg-white border border-slate-200 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <Briefcase className="h-5 w-5 text-indigo-500" />
           </div>
@@ -79,6 +100,50 @@ export default function BrandsPage() {
           <p className="text-sm text-slate-500 mt-2 max-w-[200px]">Create a dedicated workspace with specific channels and team members.</p>
         </div>
       </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+              <h2 className="text-lg font-bold text-slate-800">Create New Brand</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <form onSubmit={handleCreate} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Brand Name</label>
+                <input 
+                  type="text"
+                  required
+                  value={newBrandName}
+                  onChange={(e) => setNewBrandName(e.target.value)}
+                  placeholder="e.g. Acme Corp"
+                  className="w-full border border-slate-300 rounded-lg px-4 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Industry</label>
+                <input 
+                  type="text"
+                  value={newBrandIndustry}
+                  onChange={(e) => setNewBrandIndustry(e.target.value)}
+                  placeholder="e.g. E-commerce"
+                  className="w-full border border-slate-300 rounded-lg px-4 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
+              <div className="pt-4 flex justify-end gap-3">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+                  Cancel
+                </button>
+                <button type="submit" className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg transition-colors shadow-sm">
+                  Create Workspace
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
