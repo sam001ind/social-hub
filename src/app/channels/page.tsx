@@ -3,6 +3,7 @@
 import { Plus, CheckCircle2, AlertCircle, X, Loader2 } from "lucide-react";
 import { FaFacebook as Facebook, FaInstagram as Instagram, FaLinkedin as Linkedin, FaTwitter as Twitter, FaYoutube as Youtube } from "react-icons/fa";
 import { useState } from "react";
+import { signIn, useSession } from "next-auth/react";
 import { useSocialHub } from "@/lib/SocialHubContext";
 
 export default function ChannelsPage() {
@@ -21,14 +22,29 @@ export default function ChannelsPage() {
     setAuthenticatingChannel(channel);
   };
 
-  const handleAuthorize = () => {
+  const handleAuthorize = async () => {
     setIsConnecting(true);
-    // Simulate network delay
-    setTimeout(() => {
-      connectChannel(authenticatingChannel);
-      setIsConnecting(false);
-      setAuthenticatingChannel(null);
-    }, 1500);
+    
+    // Map our display names to NextAuth provider IDs
+    const providerMap: Record<string, string> = {
+      'YouTube': 'google',
+      'X (Twitter)': 'twitter',
+      'LinkedIn': 'linkedin',
+    };
+    
+    const providerId = providerMap[authenticatingChannel.platform];
+    
+    if (providerId) {
+      // Initiate real OAuth flow
+      await signIn(providerId, { callbackUrl: '/channels' });
+    } else {
+      // Fallback for mock channels
+      setTimeout(() => {
+        connectChannel(authenticatingChannel);
+        setIsConnecting(false);
+        setAuthenticatingChannel(null);
+      }, 1500);
+    }
   };
 
   return (
